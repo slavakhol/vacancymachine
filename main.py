@@ -35,7 +35,7 @@ def user_interaction():
         merged_data = datahh + datasj
 
     # Фильруем список вакансий по дополнительному фильтру, указанному пользователю
-    filtered_data = [e for e in merged_data if filter in e['title'] or filter in e['requirement']]
+    filtered_data = [x for x in merged_data if filter in x['title'] or filter in x['requirement']]
 
     # Создаем список из экземпляров класса Vacancy из отфильтрованного списка
     vacancies = [Vacancy(x['title'], x['url'], x['salary_from'], x['salary_to'], x['salary_currency'], x['requirement']) for x in filtered_data]

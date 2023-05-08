@@ -16,34 +16,33 @@ class HeadHunterAPI(API):
         )
         my_list = []
 
-        for jp in response.json()['items']:
+        for item in response.json()['items']:
             #Приводим формат выдачи по  API от HH к единому(за основу взят SuperJob)
-            if jp['salary'] is None:
+            if item['salary'] is None:
                 salary_from = '0'
                 salary_to = '0'
                 salary_currency = ""
             else:
-                salary_from = jp['salary']['from']
-                salary_to = jp['salary']['to']
-                salary_currency = jp['salary']['currency']
+                salary_from = item['salary']['from']
+                salary_to = item['salary']['to']
+                salary_currency = item['salary']['currency']
             if salary_from == None:
                 salary_from = "0"
             if salary_to == None:
                 salary_to = "0"
             #Формируем данные списка для сохранения в локальный файл
             data = {
-                "title": jp['name'],
-                "url": "https://hh.ru/vacancy/" + jp['id'],
+                "title": item['name'],
+                "url": "https://hh.ru/vacancy/" + item['id'],
                 "salary_from":  salary_from,
                 "salary_to": salary_to,
                 "salary_currency": salary_currency,
-                "requirement": jp['snippet']['requirement']
+                "requirement": item['snippet']['requirement']
             }
             my_list.append(data)
         #Сохраняем локальный файл
         with open("hh.json", "w", encoding="utf-8") as f:
             json.dump(my_list, f, ensure_ascii=False)
-
 
 
 class SuperJobAPI(API):
@@ -54,15 +53,15 @@ class SuperJobAPI(API):
         params={"keyword": keyword}
     )
         my_list = []
-        for jp in response.json()['objects']:
+        for object in response.json()['objects']:
 
             data = {
-                "title": jp['profession'],
-                "url": jp['link'],
-                "salary_from":  str(jp['payment_from']),
-                "salary_to": str(jp['payment_to']),
+                "title": object['profession'],
+                "url": object['link'],
+                "salary_from":  str(object['payment_from']),
+                "salary_to": str(object['payment_to']),
                 "salary_currency":  "RUB",
-                "requirement": jp['candidat']
+                "requirement": object['candidat']
             }
             my_list.append(data)
         with open("superjob.json", "w", encoding="utf-8") as f:
@@ -77,6 +76,7 @@ class Vacancy():
         self.salary_currency = salary_currency
         self.requirement = requirement
 
+    # Метод для вывода экземляра класса на печать
     def __str__(self):
         # Делаем дополнительные проверки на случай того, если работодатель не указал данные (или указал частично) о зарплате
         if self.salary_to == "0" and self.salary_from == "0":
