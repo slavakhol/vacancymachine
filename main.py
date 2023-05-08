@@ -1,15 +1,17 @@
-from api import HeadHunterAPI, SuperJobAPI
+from classes import HeadHunterAPI, SuperJobAPI, Vacancy
 import json
-
 
 # Функция для взаимодействия с пользователем
 def user_interaction():
     # Собираем вводные данные для осуществления запроса
-    choice = int(input('На каком сайте поищем? 1 - HeadHunter, 2 - SuperJob, 3 - оба'))
-    keyword = input('По какому ключевому слову будем искать?')
-    filter = input('А по какому слову будем их дополнительно фильтровать (оставить пустым, если не нужно фильтровать)?')
-    n_max = int(input("Сколько (максимум) вакансий вывести: "))
-
+    # choice = int(input('На каком сайте поищем? 1 - HeadHunter, 2 - SuperJob, 3 - оба'))
+    choice = 3
+    # keyword = input('По какому ключевому слову будем искать?')
+    keyword = "Python"
+    # filter = input('А по какому слову будем их дополнительно фильтровать (оставить пустым, если не нужно фильтровать)?')
+    filter = "офис"
+    # n_max = int(input("Сколько (максимум) вакансий вывести: "))
+    n_max = 10
     # В зависимости от выбора пользователя осуществляем запросы по API к площадкам вакансий
     if choice == 1:
         HeadHunterAPI().get_vacancies(keyword)
@@ -21,9 +23,9 @@ def user_interaction():
     else:
         print("Некорректный ввод")
     #Объединяем полученные ответы от системы в единый список
-    with open('hh.json', 'r') as f:
+    with open('hh.json', 'r', encoding="utf-8") as f:
         datahh = json.load(f)
-    with open('superjob.json', 'r') as f2:
+    with open('superjob.json', 'r', encoding="utf-8") as f2:
         datasj = json.load(f2)
     if choice == 1:
         merged_data = datahh
@@ -32,30 +34,21 @@ def user_interaction():
     elif choice == 3:
         merged_data = datahh + datasj
 
-    # Фильруем список вакансий по дополнительному филтру, указанному пользователю
+    # Фильруем список вакансий по дополнительному фильтру, указанному пользователю
     filtered_data = [e for e in merged_data if filter in e['title'] or filter in e['requirement']]
 
+    # Создаем список из экземпляров класса Vacancy из отфильтрованного списка
+    vacancies = [Vacancy(x['title'], x['url'], x['salary_from'], x['salary_to'], x['salary_currency'], x['requirement']) for x in filtered_data]
 
-    n=1
-    for position in filtered_data:
-            #Делаем дополнительные проверки на случай того, если работодатель не указал данные (или указал частично) о зарплате
-            if position['salary_to'] == "0" and position['salary_from'] == "0":
-                position['salary_currency'] = ""
-            if position['salary_from'] == "0":
-                salary_from = ""
-            else:
-                salary_from = "от " + str(position['salary_from'])
-            if position['salary_to'] == "0":
-                salary_to = ''
-            else:
-                salary_to = " до " + str(position['salary_to'])
-            # Выводим результат на экран в виде списка
-            print(f"{n}. {position['title']} ({position['url']}) {salary_from}{salary_to} {position['salary_currency']}")
-            #Проверяем достигло ли число выведенных вакансий максимального (указанного пользователем)
-            if n == n_max:
-                break
-            else:
-                n += 1
+    n = 1
+    for vacancy in vacancies:
+        print(f"{n}. {vacancy}")
+
+        # Проверяем достигло ли число выведенных вакансий максимального (указанного пользователем)
+        if n ==n_max:
+            break
+        else:
+            n+=1
 
 if __name__ == "__main__":
     user_interaction()
