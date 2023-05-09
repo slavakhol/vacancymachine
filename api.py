@@ -3,11 +3,13 @@ import requests
 from abc import ABC, abstractmethod
 import json
 class API(ABC):
+    '''Создаем абстрактный класс и метод для определения шаблона дочерних классов'''
     @abstractmethod
     def get_vacancies(self):
         pass
 
 class HeadHunterAPI(API):
+    '''Определяем метод класс для обращению к серверу площадки по API'''
     def get_vacancies(self, keyword):
         response = requests.get(
         "https://api.hh.ru/vacancies?",
@@ -15,9 +17,11 @@ class HeadHunterAPI(API):
         params={"text": keyword}
         )
         my_list = []
-
+        # Приводим формат выдачи по  API от HH к единому (за основу взят SuperJob), осуществляется проверка отсутствия необязательных полей
         for item in response.json()['items']:
-            #Приводим формат выдачи по  API от HH к единому(за основу взят SuperJob)
+            if item['snippet']['requirement'] is None:
+                item['snippet']['requirement'] = ""
+
             if item['salary'] is None:
                 salary_from = '0'
                 salary_to = '0'
@@ -46,6 +50,7 @@ class HeadHunterAPI(API):
 
 
 class SuperJobAPI(API):
+    '''Определяем метод класс для обращению к серверу площадки по API'''
     def get_vacancies(self, keyword):
         response = requests.get(
         "https://api.superjob.ru/2.0/vacancies/",
@@ -53,8 +58,10 @@ class SuperJobAPI(API):
         params={"keyword": keyword}
     )
         my_list = []
+        # Приводим формат выдачи по  API к единому, осуществляется проверка отсутствия необязательных полей
         for object in response.json()['objects']:
-
+            if object['candidat'] is None:
+                object['candidat'] = ""
             data = {
                 "title": object['profession'],
                 "url": object['link'],
@@ -67,29 +74,3 @@ class SuperJobAPI(API):
         with open("superjob.json", "w", encoding="utf-8") as f:
             json.dump(my_list, f, ensure_ascii=False)
 
-class Vacancy():
-    def __init__(self, title, url, salary_from, salary_to, salary_currency, requirement):
-        self.title = title
-        self.url = url
-        self.salary_from = salary_from
-        self.salary_to = salary_to
-        self.salary_currency = salary_currency
-        self.requirement = requirement
-
-    # Метод для вывода экземляра класса на печать
-    def __str__(self):
-        # Делаем дополнительные проверки на случай того, если работодатель не указал данные (или указал частично) о зарплате
-        if self.salary_to == "0" and self.salary_from == "0":
-            salary_currency = "Зарплата не указана"
-        else:
-            salary_currency = self.salary_currency
-        if self.salary_from == "0":
-            salary_from = ""
-        else:
-            salary_from = "от " + str(self.salary_from)
-        if self.salary_to == "0":
-            salary_to = ""
-        else:
-            salary_to = " до " + str(self.salary_to)
-
-        return f'{self.title} ({self.url}) {salary_from}{salary_to} {salary_currency}'
