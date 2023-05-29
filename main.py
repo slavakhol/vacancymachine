@@ -51,10 +51,11 @@ def user_interaction():
     except:
         print("Ошибка в обработке данных")
 
+    #Предлагаем провести сортировку по зарплате
     sort_choice = int(input('Хотите отсортировать вакансии по зарплате? Нажмите - 1'))
     if sort_choice == 1:
-        sorted_vacancies = sorted(vacancies, key=lambda x: x.salary_from, reverse=True)
 
+        sorted_vacancies = sorted(vacancies, reverse=True)
         n = 1
         for vacancy in sorted_vacancies:
             print(f"{n}. {vacancy}")

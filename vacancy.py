@@ -8,6 +8,11 @@ class Vacancy():
         self.salary_currency = salary_currency
         self.requirement = requirement
 
+    #Методы сравнения
+    def __lt__(self, other):
+        return self.salary_from < other.salary_from
+    def __gt__(self, other):
+        return self.salary_from > other.salary_from
 
     # Метод для вывода экземляра класса на печать
     def __str__(self):
