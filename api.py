@@ -23,17 +23,17 @@ class HeadHunterAPI(API):
                 item['snippet']['requirement'] = ""
 
             if item['salary'] is None:
-                salary_from = '0'
-                salary_to = '0'
+                salary_from = 0
+                salary_to = 0
                 salary_currency = ""
             else:
                 salary_from = item['salary']['from']
                 salary_to = item['salary']['to']
                 salary_currency = item['salary']['currency']
             if salary_from == None:
-                salary_from = "0"
+                salary_from = 0
             if salary_to == None:
-                salary_to = "0"
+                salary_to = 0
             #Формируем данные списка для сохранения в локальный файл
             data = {
                 "title": item['name'],
@@ -65,8 +65,8 @@ class SuperJobAPI(API):
             data = {
                 "title": object['profession'],
                 "url": object['link'],
-                "salary_from":  str(object['payment_from']),
-                "salary_to": str(object['payment_to']),
+                "salary_from":  int(object['payment_from']),
+                "salary_to": int(object['payment_to']),
                 "salary_currency":  "RUB",
                 "requirement": object['candidat']
             }

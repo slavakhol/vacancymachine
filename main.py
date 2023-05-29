@@ -14,7 +14,7 @@ def user_interaction():
     # keyword = input('По какому ключевому слову будем искать?')
     keyword = "Python"
     # filter = input('А по какому слову будем их дополнительно фильтровать (оставить пустым, если не нужно фильтровать)?')
-    filter = "RabbitMQ"
+    filter = "Django"
     # n_max = int(input("Сколько (максимум) вакансий вывести: "))
     n_max = 20
     # В зависимости от выбора пользователя осуществляем запросы по API к площадкам вакансий
@@ -32,7 +32,7 @@ def user_interaction():
     except:
             print("Ошибка в получении данных")
 
-    # Фильруем список вакансий по дополнительному фильтру, указанному пользователю
+    # Фильтруем список вакансий по дополнительному фильтру, указанному пользователю
     try:
         filtered_data = [x for x in merged_data if filter in x['title'] or filter in x['requirement']]
         # Создаем список из экземпляров класса Vacancy из отфильтрованного списка
@@ -50,6 +50,20 @@ def user_interaction():
 
     except:
         print("Ошибка в обработке данных")
+
+    sort_choice = int(input('Хотите отсортировать вакансии по зарплате? Нажмите - 1'))
+    if sort_choice == 1:
+        sorted_vacancies = sorted(vacancies, key=lambda x: x.salary_from, reverse=True)
+
+        n = 1
+        for vacancy in sorted_vacancies:
+            print(f"{n}. {vacancy}")
+            if n == n_max:
+                break
+            else:
+                n += 1
+    else:
+        print("Работа завершена")
 
 if __name__ == "__main__":
     user_interaction()
