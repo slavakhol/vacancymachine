@@ -14,7 +14,7 @@ class HeadHunterAPI(API):
         response = requests.get(
         "https://api.hh.ru/vacancies?",
         headers={"HH-User-Agent": 'VacancyMachine/1.0 (slava.kholopov@gmail.com)'},
-        params={"text": keyword}
+        params={"text": keyword, "per_page": 100}
         )
         my_list = []
         # Приводим формат выдачи по  API от HH к единому (за основу взят SuperJob), осуществляется проверка отсутствия необязательных полей
